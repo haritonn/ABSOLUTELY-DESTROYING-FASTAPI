@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, ConfigDict
+from typing import Literal
 import uvicorn, joblib
 import numpy as np 
 import pandas as pd
@@ -9,7 +10,7 @@ app = FastAPI()
 
 class Features(BaseModel):
     pclass: int = Field(ge = 1,le=3)
-    sex: str 
+    sex: Literal["male", "female"]
     age: float = Field(ge=10, le=130)
     sibsp: int = Field(ge=0, le=10)
     fare: float = Field(ge=10, le=100)
@@ -32,11 +33,14 @@ async def prediction_of_model(data:Features):
 
     return {"Prediction": int(predictions[0])}
 
+@app.get("/predictions", tags=["Model"], summary="Returns all inputed data")
+async def get_all_preds():
+    return {"All predictions": pred_list}
 
 @app.get("/predictions/{pred_id}", tags=["Model"], summary = "Return data input with predicted value")
 async def get_predictions(pred_id: str):
     try:
-        return {"object with prediction": pred_list[pred_id]}
+        return {"Object with prediction": pred_list[pred_id]}
     except:
         raise HTTPException(status_code=404, detail=f"Object with predicted {pred_id} was not found")
 
