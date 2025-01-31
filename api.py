@@ -21,7 +21,7 @@ pred_list={"1":[], "0":[]}
 
 
 @app.post("/predictions", tags=["Model"], summary="Returns prediction of model for single data input")
-async def prediction_of_model(data:Features):
+def prediction_of_model(data:Features):
     data_df = pd.DataFrame({"Pclass": data.pclass, "Sex": data.sex, "Age": data.age, "SibSp": data.sibsp, "Fare":data.fare}, index = [0,1,2,3,4,5])
 
     predictions = pipeline.predict(data_df)
@@ -34,11 +34,11 @@ async def prediction_of_model(data:Features):
     return {"Prediction": int(predictions[0])}
 
 @app.get("/predictions", tags=["Model"], summary="Returns all inputed data")
-async def get_all_preds():
+def get_all_preds():
     return {"All predictions": pred_list}
 
 @app.get("/predictions/{pred_id}", tags=["Model"], summary = "Return data input with predicted value")
-async def get_predictions(pred_id: str):
+def get_predictions(pred_id: str):
     try:
         return {"Object with prediction": pred_list[pred_id]}
     except:
